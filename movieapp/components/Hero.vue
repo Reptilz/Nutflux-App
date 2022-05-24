@@ -4,7 +4,7 @@
       <div class="text-container">
           <div class="text">
               <span class="mini-heading">My Streaming</span>
-              <h1><span>My</span>Streaming</h1>
+              <h1><span>My_</span>Streaming</h1>
               <a href="#movie-grid" class="button">
                   View Movies
               </a>
