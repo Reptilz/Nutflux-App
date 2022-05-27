@@ -5,19 +5,33 @@
 
     <!-- SEARCH -->
     <div class="container search">
-      <input v-model.lazy="searchInput" type="text" placeholder="Search..." />
-      <button v-show="searchInput !== ''" class="button">Clear Search</button>
+      <input
+        v-model.lazy="searchInput"
+        type="text"
+        placeholder="Search..."
+        @keyup.enter="$fetch"
+      />
+      <button v-show="searchInput !== ''" class="button" @click="clearSearch">
+        Clear Search
+      </button>
     </div>
 
-    <!-- Movies -->
-    <div class="container movies">
-      <div id="movie-grid" class="movies-grid">
-        <div v-for="(movie, index) in movies" :key="index" class="movie">
+    <!-- COMPONENT LOADING -->
+    <Loading v-if="$fetchState.pending" />
+
+    <!-- Div for Search Movies -->
+    <div v-else class="container movies">
+      <div v-if="searchInput !== ''" id="movie-grid" class="movies-grid">
+        <div v-for="(movie, index) in searchMovies" :key="index" class="movie">
           <div class="movie-img">
-            <img :src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`" :alt="movie.title" />
-            <p class="review">{{movie.vote_average}}</p>
-            <p class="overview">{{movie.overview}}</p>
+            <img
+              :src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`"
+              :alt="movie.title"
+            />
+            <p class="review">{{ movie.vote_average }}</p>
+            <p class="overview">{{ movie.overview }}</p>
           </div>
+
           <!-- INFO -->
           <div class="info">
             <p class="title">
@@ -34,13 +48,58 @@
                 })
               }}
             </p>
-            <NuxtLink 
-            class="button button-light" :to="{ 
-              name: 'movies-movieid', 
-              params: {
-                movieid: movie.id
-                } 
-              }">
+            <NuxtLink
+              class="button button-light"
+              :to="{
+                name: 'movies-movieid',
+                params: {
+                  movieid: movie.id,
+                },
+              }"
+            >
+              Get More Infos
+            </NuxtLink>
+          </div>
+        </div>
+      </div>
+
+      <!-- div for list movies -->
+      <div v-else id="movie-grid" class="movies-grid">
+        <div v-for="(movie, index) in movies" :key="index" class="movie">
+          <div class="movie-img">
+            <img
+              :src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`"
+              :alt="movie.title"
+            />
+            <p class="review">{{ movie.vote_average }}</p>
+            <p class="overview">{{ movie.overview }}</p>
+          </div>
+
+          <!-- INFO -->
+          <div class="info">
+            <p class="title">
+              {{ movie.title.slice(0, 25) }}
+              <span v-if="movie.title.length > 25">...</span>
+            </p>
+            <p class="release">
+              Release:
+              {{
+                new Date(movie.release_date).toLocaleString('en-us', {
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric',
+                })
+              }}
+            </p>
+            <NuxtLink
+              class="button button-light"
+              :to="{
+                name: 'movies-movieid',
+                params: {
+                  movieid: movie.id,
+                },
+              }"
+            >
               Get More Infos
             </NuxtLink>
           </div>
@@ -57,23 +116,64 @@ export default {
   data() {
     return {
       movies: [],
+      searchMovies: [],
       searchInput: '',
     }
   },
-  async fetch(){
-    await this.getMovies()
+
+  async fetch() {
+    if (this.searchInput === '') {
+      await this.getMovies()
+      return
+    }
+    await this.searchedMovies()
+  },
+  fetchDelay: 500,
+
+  head() {
+    return {
+      title: 'Movie App - Jordan Morlet',
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: 'Get all the latest streaming movies in theaters & online',
+        },
+        {
+          hid: 'keywords',
+          name: 'keywords',
+          content: 'movies, stream, streaming',
+        },
+      ],
+    }
   },
   methods: {
-   async getMovies(){
-     const data = axios.get(
-       `https://api.themoviedb.org/3/movie/now_playing?api_key=583a93ce4dd56c8af08dcfe52409369f&language=en-US&page=1`
-     );
-     const result = await data;
-     result.data.results.forEach(movie => {
-       this.movies.push(movie);
-     });
-   },
-   
+    async getMovies() {
+      const data = axios.get(
+        `https://api.themoviedb.org/3/movie/now_playing?api_key=583a93ce4dd56c8af08dcfe52409369f&language=en-US&page=1`
+      )
+      const result = await data
+      const allMovies = result.data.results
+      allMovies.forEach((movie) => {
+        this.movies.push(movie)
+      })
+    },
+
+    async searchedMovies() {
+      const data = axios.get(
+        `https://api.themoviedb.org/3/search/movie?api_key=583a93ce4dd56c8af08dcfe52409369f&language=en-US&page=1&query=${this.searchInput}`
+      )
+      const result = await data
+      const allMovies = result.data.results
+      allMovies.forEach((movie) => {
+        this.searchMovies.push(movie)
+      })
+    },
+
+    clearSearch() {
+      this.searchInput = ''
+      this.searchMovies = []
+    },
   },
 }
 </script>
