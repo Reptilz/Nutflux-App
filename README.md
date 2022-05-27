@@ -5,7 +5,7 @@ The application is under development.
 
 
 ### Link
-[My Streaming App - Demo](https://my-movie-react.netlify.app/](https://my-streaming-app-jordanmorlet.herokuapp.com/)
+[My Streaming App](https://my-streaming-app-jordanmorlet.herokuapp.com/)
 
 
 ## Authors
