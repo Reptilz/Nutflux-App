@@ -1,21 +1,19 @@
 <template>
   <div class="hero">
-      <img src="../assets/img/movieHero.jpg" alt="banniere">
-      <div class="text-container">
-          <div class="text">
-              <span class="mini-heading">My Streaming</span>
-              <h1><span>My_</span>Streaming</h1>
-              <a href="#movie-grid" class="button">
-                  View Movies
-              </a>
-          </div>
+    <img src="../assets/img/movieHero.jpg" alt="banniere" />
+    <div class="text-container">
+      <div class="text">
+        <span class="mini-heading">My Streaming</span>
+        <h1><span>Nutflux</span></h1>
+        <a href="#movie-grid" class="button"> View Movies </a>
       </div>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-    name: 'Hero',
+  name: 'Hero',
 }
 </script>
 
